@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"runtime"
 	"sort"
-	"strconv"
 	"strings"
 
 	"github.com/go-delve/delve/pkg/goversion"
@@ -114,7 +113,7 @@ func checkCert() bool {
 		return true
 	}
 
-	x := exec.Command("_scripts/gencert.sh")
+	/*x := exec.Command("_scripts/gencert.sh")
 	x.Stdout = os.Stdout
 	x.Stderr = os.Stderr
 	x.Env = os.Environ()
@@ -126,8 +125,9 @@ func checkCert() bool {
 	if err != nil {
 		fmt.Printf("An error occoured when generating and installing a new certificate: %v\n", err)
 		return false
-	}
-	os.Setenv("CERT", "dlv-cert")
+	}*/
+	// use ad-hoc certificate
+	os.Setenv("CERT", "-")
 	return true
 }
 
@@ -196,7 +196,7 @@ func getoutput(cmd string, args ...interface{}) string {
 }
 
 func codesign(path string) {
-	execute("codesign", "-s", os.Getenv("CERT"), path)
+	execute("codesign", "--force", "-s", os.Getenv("CERT"), "--entitlements", "_scripts/entitlements.plist", path)
 }
 
 func installedExecutablePath() string {
@@ -218,7 +218,7 @@ func canMacnative() bool {
 		return false
 	}
 
-	macOSVersion := strings.Split(strings.TrimSpace(getoutput("/usr/bin/sw_vers", "-productVersion")), ".")
+	/*macOSVersion := strings.Split(strings.TrimSpace(getoutput("/usr/bin/sw_vers", "-productVersion")), ".")
 	minor, err := strconv.ParseInt(macOSVersion[1], 10, 64)
 	if err != nil {
 		return false
@@ -231,7 +231,7 @@ func canMacnative() bool {
 	_, err = os.Stat(typesHeader)
 	if err != nil {
 		return false
-	}
+	}*/
 	return true
 }
 
@@ -276,6 +276,7 @@ func testFlags() []string {
 	}
 	if runtime.GOOS == "darwin" {
 		testFlags = append(testFlags, "-exec="+wd+"/_scripts/testsign")
+		testFlags = append(testFlags, prepareMacnative())
 	}
 	return testFlags
 }

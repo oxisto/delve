@@ -1,6 +1,7 @@
 //+build darwin,macnative
 
 #include "proc_darwin.h"
+#include <stdio.h>
 
 static const unsigned char info_plist[]
 __attribute__ ((section ("__TEXT,__info_plist"),used)) =

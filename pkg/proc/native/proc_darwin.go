@@ -34,9 +34,8 @@ type osProcessDetails struct {
 }
 
 // Launch creates and begins debugging a new process. Uses a
-// custom fork/exec process in order to take advantage of
-// PT_SIGEXC on Darwin which will turn Unix signals into
-// Mach exceptions.
+// POSIX-style spawn in combination with PT_SIGEXC on Darwin
+// which will turn Unix signals into Mach exceptions.
 func Launch(cmd []string, wd string, flags proc.LaunchFlags, _ []string, _ string, _ [3]string) (*proc.Target, error) {
 	argv0Go, err := filepath.Abs(cmd[0])
 	if err != nil {
@@ -68,14 +67,14 @@ func Launch(cmd []string, wd string, flags proc.LaunchFlags, _ []string, _ strin
 	}()
 	var pid int
 	dbp.execPtraceFunc(func() {
-		ret := C.fork_exec(argv0, &argvSlice[0], C.int(len(argvSlice)),
+		ret := C.spawn(argv0, &argvSlice[0], C.int(len(argvSlice)),
 			C.CString(wd),
 			&dbp.os.task, &dbp.os.portSet, &dbp.os.exceptionPort,
 			&dbp.os.notificationPort)
 		pid = int(ret)
 	})
 	if pid <= 0 {
-		return nil, fmt.Errorf("could not fork/exec")
+		return nil, fmt.Errorf("could not spawn: %d", pid)
 	}
 	dbp.pid = pid
 	dbp.childProcess = true
@@ -83,42 +82,14 @@ func Launch(cmd []string, wd string, flags proc.LaunchFlags, _ []string, _ strin
 		C.free(unsafe.Pointer(argvSlice[i]))
 	}
 
-	// Initialize enough of the Process state so that we can use resume and
-	// trapWait to wait until the child process calls execve.
+	task := C.get_task_for_pid(C.int(dbp.pid))
 
-	for {
-		task := C.get_task_for_pid(C.int(dbp.pid))
-		// The task_for_pid call races with the fork call. This can
-		// result in the parent task being returned instead of the child.
-		if task != dbp.os.task {
-			err = dbp.updateThreadListForTask(task)
-			if err == nil {
-				break
-			}
-			if err != couldNotGetThreadCount && err != couldNotGetThreadList {
-				return nil, err
-			}
-		}
-	}
-
-	if err := dbp.resume(); err != nil {
-		return nil, err
-	}
-
-	for _, th := range dbp.threads {
-		th.CurrentBreakpoint.Clear()
-	}
-
-	trapthread, err := dbp.trapWait(-1)
+	err = dbp.updateThreadListForTask(task)
 	if err != nil {
-		return nil, err
-	}
-	if _, err := dbp.stop(nil); err != nil {
 		return nil, err
 	}
 
 	dbp.os.initialized = true
-	dbp.memthread = trapthread
 
 	tgt, err := dbp.initialize(argv0Go, []string{})
 	if err != nil {
@@ -228,6 +199,7 @@ func (dbp *nativeProcess) updateThreadListForTask(task C.task_t) error {
 			break
 		}
 	}
+
 	if kret != C.KERN_SUCCESS {
 		return couldNotGetThreadList
 	}

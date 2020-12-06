@@ -5,12 +5,70 @@
 
 extern char** environ;
 
+#ifndef POSIX_SPAWN_DISABLE_ASLR
+#define POSIX_SPAWN_DISABLE_ASLR 0x0100
+#endif
+
 int
 close_exec_pipe(int fd[2]) {
 	if (pipe(fd) < 0) return -1;
 	if (fcntl(fd[0], F_SETFD, FD_CLOEXEC) < 0) return -1;
 	if (fcntl(fd[1], F_SETFD, FD_CLOEXEC) < 0) return -1;
 	return 0;
+}
+
+int
+spawn(char *argv0, char **argv, int size,
+		char *wd,
+		task_t *task,
+		mach_port_t *port_set,
+		mach_port_t *exception_port,
+		mach_port_t *notification_port)
+{
+	kern_return_t kret = 0;
+
+    posix_spawn_file_actions_t file_actions;
+    posix_spawnattr_t attributes;
+
+	// TODO: check error
+    posix_spawnattr_init(&attributes);
+
+    sigset_t no_signals;
+    sigset_t all_signals;
+    sigemptyset(&no_signals);
+    sigfillset(&all_signals);
+
+    posix_spawnattr_setsigmask(&attributes, &no_signals);
+    posix_spawnattr_setsigdefault(&attributes, &all_signals);
+
+    short flags = POSIX_SPAWN_START_SUSPENDED | POSIX_SPAWN_SETSIGDEF |
+          POSIX_SPAWN_SETSIGMASK;
+
+	// seems to be needed on arm64
+	flags |= POSIX_SPAWN_DISABLE_ASLR;
+
+    posix_spawnattr_setflags(&attributes, flags);
+
+    pid_t pid;
+
+	posix_spawnp(&pid, argv0, NULL, &attributes,
+                                argv,
+                                NULL);
+
+	kret = acquire_mach_task(pid, task, port_set, exception_port, notification_port);
+	if (kret != KERN_SUCCESS) {
+		return -1;
+	}
+
+	int err = ptrace(PT_ATTACHEXC | PT_SIGEXC, pid, 0, 0);
+    if (err != 0) {
+        perror("ptrace");
+        return -1;
+    }
+
+	posix_spawnattr_destroy(&attributes);
+
+	return pid;
 }
 
 int
@@ -26,11 +84,17 @@ fork_exec(char *argv0, char **argv, int size,
 	// to ensure that the parent has set the exception ports on
 	// the child task before it execs.
 	int fd[2];
-	if (close_exec_pipe(fd) < 0) return -1;
+	if (close_exec_pipe(fd) < 0) {
+		printf("close_exec_pipe ed\n");
+		return -1;
+	}
 
 	// Create another pipe to signal the parent on exec.
 	int efd[2];
-	if (close_exec_pipe(efd) < 0) return -1;
+	if (close_exec_pipe(efd) < 0) {
+		printf("close_exec_pipe fd\n");
+		return -1;
+	}
 
 	kern_return_t kret;
 	pid_t pid = fork();
@@ -39,7 +103,10 @@ fork_exec(char *argv0, char **argv, int size,
 		close(fd[0]);
 		close(efd[1]);
 		kret = acquire_mach_task(pid, task, port_set, exception_port, notification_port);
-		if (kret != KERN_SUCCESS) return -1;
+		if (kret != KERN_SUCCESS) {
+			printf("acquire_mach_task, kret: %d\n", kret);
+			return -1;
+		}
 
 		char msg = 'c';
 		write(fd[1], &msg, 1);

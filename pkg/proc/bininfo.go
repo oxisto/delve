@@ -129,6 +129,7 @@ var (
 
 	supportedDarwinArch = map[macho.Cpu]bool{
 		macho.CpuAmd64: true,
+		macho.CpuArm64: true,
 	}
 )
 

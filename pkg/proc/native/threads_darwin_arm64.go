@@ -1,4 +1,4 @@
-//+build !arm64,macnative
+//+build arm64 darwin,macnative
 
 package native
 
@@ -22,7 +22,7 @@ type waitStatus sys.WaitStatus
 // operating system / kernel.
 type osSpecificDetails struct {
 	threadAct C.thread_act_t
-	registers C.x86_thread_state64_t
+	registers C.arm_thread_state64_t
 	exists    bool
 }
 

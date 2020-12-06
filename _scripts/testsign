@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
-codesign -s $CERT $1
+# TODO: we need to get the correct path to the entitlements file for all tests
+codesign -s $CERT --entitlements ../../_scripts/entitlements.plist $1
 exec "$@"
