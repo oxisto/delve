@@ -1,6 +1,7 @@
 //+build darwin,macnative
 
 #include "proc_darwin.h"
+#include <stdio.h>
 
 static const unsigned char info_plist[]
 __attribute__ ((section ("__TEXT,__info_plist"),used)) =
@@ -34,19 +35,32 @@ acquire_mach_task(int tid,
 	mach_port_t prev_not;
 	mach_port_t self = mach_task_self();
 
+	printf("trying task_for_pid(self, %d, %d)\n", tid, task);
+
 	kret = task_for_pid(self, tid, task);
 	if (kret != KERN_SUCCESS) return kret;
+
+	printf("still here\n");
+
 
 	// Allocate exception port.
 	kret = mach_port_allocate(self, MACH_PORT_RIGHT_RECEIVE, exception_port);
 	if (kret != KERN_SUCCESS) return kret;
 
+	printf("still here\n");
+
+
 	kret = mach_port_insert_right(self, *exception_port, *exception_port, MACH_MSG_TYPE_MAKE_SEND);
 	if (kret != KERN_SUCCESS) return kret;
+
+	printf("still here\n");
+
 
 	kret = task_set_exception_ports(*task, EXC_MASK_BREAKPOINT|EXC_MASK_SOFTWARE, *exception_port,
 			EXCEPTION_DEFAULT, THREAD_STATE_NONE);
 	if (kret != KERN_SUCCESS) return kret;
+
+
 
 	// Allocate notification port to alert of when the process dies.
 	kret = mach_port_allocate(self, MACH_PORT_RIGHT_RECEIVE, notification_port);
@@ -66,6 +80,7 @@ acquire_mach_task(int tid,
 	// Move exception and notification ports to port set.
 	kret = mach_port_move_member(self, *exception_port, *port_set);
 	if (kret != KERN_SUCCESS) return kret;
+
 
 	return mach_port_move_member(self, *notification_port, *port_set);
 }

@@ -129,6 +129,7 @@ var (
 
 	supportedDarwinArch = map[macho.Cpu]bool{
 		macho.CpuAmd64: true,
+		macho.CpuArm64: true,
 	}
 )
 
@@ -518,6 +519,9 @@ func (err *ErrCouldNotFindLine) Error() string {
 // corresponding to the first instruction matching the specified file:line
 // in the containing function and all its inlined calls.
 func (bi *BinaryInfo) LineToPC(filename string, lineno int) (pcs []uint64, err error) {
+
+	fmt.Printf("%+v\n", bi)
+
 	fileFound := false
 	var pc uint64
 pcsearch:

@@ -26,11 +26,17 @@ fork_exec(char *argv0, char **argv, int size,
 	// to ensure that the parent has set the exception ports on
 	// the child task before it execs.
 	int fd[2];
-	if (close_exec_pipe(fd) < 0) return -1;
+	if (close_exec_pipe(fd) < 0) {
+		printf("close_exec_pipe ed\n");
+		return -1;
+	}
 
 	// Create another pipe to signal the parent on exec.
 	int efd[2];
-	if (close_exec_pipe(efd) < 0) return -1;
+	if (close_exec_pipe(efd) < 0) {
+		printf("close_exec_pipe fd\n");
+		return -1;
+	}
 
 	kern_return_t kret;
 	pid_t pid = fork();
@@ -39,7 +45,10 @@ fork_exec(char *argv0, char **argv, int size,
 		close(fd[0]);
 		close(efd[1]);
 		kret = acquire_mach_task(pid, task, port_set, exception_port, notification_port);
-		if (kret != KERN_SUCCESS) return -1;
+		if (kret != KERN_SUCCESS) {
+			printf("acquire_mach_task, kret: %d\n", kret);
+			return -1;
+		}
 
 		char msg = 'c';
 		write(fd[1], &msg, 1);

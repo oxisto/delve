@@ -72,10 +72,11 @@ func Launch(cmd []string, wd string, flags proc.LaunchFlags, _ []string, _ strin
 			C.CString(wd),
 			&dbp.os.task, &dbp.os.portSet, &dbp.os.exceptionPort,
 			&dbp.os.notificationPort)
+		fmt.Printf("ret: %d\n", ret)
 		pid = int(ret)
 	})
 	if pid <= 0 {
-		return nil, fmt.Errorf("could not fork/exec")
+		return nil, fmt.Errorf("could not fork/exec: %d", pid)
 	}
 	dbp.pid = pid
 	dbp.childProcess = true
