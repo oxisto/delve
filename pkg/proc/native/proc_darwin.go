@@ -68,7 +68,11 @@ func Launch(cmd []string, wd string, flags proc.LaunchFlags, _ []string, _ strin
 	}()
 	var pid int
 	dbp.execPtraceFunc(func() {
-		ret := C.fork_exec(argv0, &argvSlice[0], C.int(len(argvSlice)),
+		/*ret := C.fork_exec(argv0, &argvSlice[0], C.int(len(argvSlice)),
+		C.CString(wd),
+		&dbp.os.task, &dbp.os.portSet, &dbp.os.exceptionPort,
+		&dbp.os.notificationPort)*/
+		ret := C.spawn(argv0, &argvSlice[0], C.int(len(argvSlice)),
 			C.CString(wd),
 			&dbp.os.task, &dbp.os.portSet, &dbp.os.exceptionPort,
 			&dbp.os.notificationPort)
@@ -87,22 +91,22 @@ func Launch(cmd []string, wd string, flags proc.LaunchFlags, _ []string, _ strin
 	// Initialize enough of the Process state so that we can use resume and
 	// trapWait to wait until the child process calls execve.
 
-	for {
-		task := C.get_task_for_pid(C.int(dbp.pid))
-		// The task_for_pid call races with the fork call. This can
-		// result in the parent task being returned instead of the child.
-		if task != dbp.os.task {
-			err = dbp.updateThreadListForTask(task)
-			if err == nil {
-				break
-			}
-			if err != couldNotGetThreadCount && err != couldNotGetThreadList {
-				return nil, err
-			}
-		}
+	//for {
+	task := C.get_task_for_pid(C.int(dbp.pid))
+	// The task_for_pid call races with the fork call. This can
+	// result in the parent task being returned instead of the child.
+	//if task != dbp.os.task {
+	err = dbp.updateThreadListForTask(task)
+	/*	if err == nil {
+		break
+	}*/
+	if err != nil {
+		return nil, err
 	}
+	//}
+	//}
 
-	if err := dbp.resume(); err != nil {
+	/*if err := dbp.resume(); err != nil {
 		return nil, err
 	}
 
@@ -116,15 +120,17 @@ func Launch(cmd []string, wd string, flags proc.LaunchFlags, _ []string, _ strin
 	}
 	if _, err := dbp.stop(nil); err != nil {
 		return nil, err
-	}
+	}*/
 
 	dbp.os.initialized = true
-	dbp.memthread = trapthread
+	//dbp.memthread = trapthread*/
 
 	tgt, err := dbp.initialize(argv0Go, []string{})
 	if err != nil {
 		return nil, err
 	}
+
+	fmt.Printf("still here, returning target")
 
 	return tgt, err
 }
@@ -216,19 +222,25 @@ func (dbp *nativeProcess) updateThreadListForTask(task C.task_t) error {
 	)
 
 	for {
+		fmt.Printf("Trying updateThreadListForTask\n")
 		count = C.thread_count(task)
 		if count == -1 {
 			return couldNotGetThreadCount
 		}
+		fmt.Printf("thread count: %d\n", count)
 		list = make([]uint32, count)
 
 		// TODO(dp) might be better to malloc mem in C and then free it here
 		// instead of getting count above and passing in a slice
 		kret = C.get_threads(task, unsafe.Pointer(&list[0]), count)
+		fmt.Printf("kret: %d\n", kret)
 		if kret != -2 {
 			break
 		}
 	}
+
+	fmt.Printf("list: %+v\n", list)
+
 	if kret != C.KERN_SUCCESS {
 		return couldNotGetThreadList
 	}
@@ -271,6 +283,7 @@ func (dbp *nativeProcess) addThread(port int, attach bool) (*nativeThread, error
 	if dbp.memthread == nil {
 		dbp.memthread = thread
 	}
+	fmt.Printf("process: %+v", dbp)
 	return thread, nil
 }
 
