@@ -46,7 +46,7 @@ acquire_mach_task(int tid,
 	if (kret != KERN_SUCCESS) return kret;
 
 	kret = task_set_exception_ports(*task, EXC_MASK_BREAKPOINT|EXC_MASK_SOFTWARE, *exception_port,
-			EXCEPTION_DEFAULT, THREAD_STATE_NONE);
+			EXCEPTION_DEFAULT|MACH_EXCEPTION_CODES, THREAD_STATE_NONE);
 	if (kret != KERN_SUCCESS) return kret;
 
 	// Allocate notification port to alert of when the process dies.
@@ -134,66 +134,122 @@ thread_count(task_t task) {
 	return count;
 }
 
+
+const char* exception_string(int code) {
+	if(code == EXC_SOFTWARE) {
+		return "EXC_SOFTWARE";
+	} else if(code == EXC_BREAKPOINT) {
+		return "EXC_BREAKPOINT";
+	} else if(code == EXC_BAD_ACCESS) {
+		return "EXC_BAD_ACCESS";
+	}
+
+	return NULL;
+}
+
+const char* signal_string(int signal) {
+	if(signal == SIGHUP) {
+		return "SIGHUP";
+	} else if(signal == SIGSEGV) {
+		return "SIGSEGV";
+	} else if(signal == SIGSTOP) {
+		return "SIGSTOP";
+	} else if(signal == SIGURG) {
+		return "SIGURG";
+	}
+
+	return NULL;
+}
+
 mach_port_t
 mach_port_wait(mach_port_t port_set, task_t *task, int nonblocking) {
 	kern_return_t kret;
-	thread_act_t thread;
-	NDR_record_t *ndr;
-	integer_t *data;
-	union
-	{
-		mach_msg_header_t hdr;
-		char data[256];
-	} msg;
+	int64_t *data;
 	mach_msg_option_t opts = MACH_RCV_MSG|MACH_RCV_INTERRUPT;
 	if (nonblocking) {
 		opts |= MACH_RCV_TIMEOUT;
 	}
 
+	char req[128];
+
 	// Wait for mach msg.
-	kret = mach_msg(&msg.hdr, opts,
-			0, sizeof(msg.data), port_set, 10, MACH_PORT_NULL);
+	kret = mach_msg((mach_msg_header_t*) &req, opts,
+			0, sizeof(req), port_set, 10, MACH_PORT_NULL);
 	if (kret == MACH_RCV_INTERRUPTED) return kret;
 	if (kret != MACH_MSG_SUCCESS) return 0;
 
+	__Request__mach_exception_raise_t* msg = (__Request__mach_exception_raise_t*) req;
 
-	switch (msg.hdr.msgh_id) {
-		case 2401: { // Exception
-			// 2401 is the exception_raise event, defined in:
+	switch (msg->Head.msgh_id) {
+		case 2405: { // Exception
+			// use 64-bit exceptions (id 2405)
+			// 2405 is the exception_raise event, defined in:
+			// TODO: path to xcode file
 			// http://opensource.apple.com/source/xnu/xnu-2422.1.72/osfmk/mach/exc.defs?txt
 			// compile this file with mig to get the C version of the description
 			
-			mach_msg_body_t *bod = (mach_msg_body_t*)(&msg.hdr + 1);
+			/*mach_msg_body_t *bod = (mach_msg_body_t*)(&msg.hdr + 1);
 			mach_msg_port_descriptor_t *desc = (mach_msg_port_descriptor_t *)(bod + 1);
 			thread = desc[0].name;
 			*task = desc[1].name;
-			ndr = (NDR_record_t *)(desc + 2);
-			data = (integer_t *)(ndr + 1);
+			ndr = (NDR_record_t *)(desc + 2);*/
 
-			if (thread_suspend(thread) != KERN_SUCCESS) return 0;
-			// Send our reply back so the kernel knows this exception has been handled.
-			kret = mach_send_reply(msg.hdr);
-			if (kret != MACH_MSG_SUCCESS) return 0;
-			if (data[2] == EXC_SOFT_SIGNAL) {
-				if (data[3] != SIGTRAP) {
-					if (thread_resume(thread) != KERN_SUCCESS) return 0;
-					return mach_port_wait(port_set, task, nonblocking);
+			exception_type_t exception_type = msg->exception;
+			mach_msg_type_number_t code_count = msg->codeCnt;
+			data = msg->code;
+
+			//printf("Caught exception; exception_type (0x%02x): %s, code_count: 0x%02x, data[0]: 0x%08lx, data[1]: 0x%08lx\n", exception_type, exception_string(exception_type), code_count, data[0], data[1]);
+
+			if (thread_suspend(msg->thread.name) != KERN_SUCCESS) return 0;
+
+			if(exception_type == EXC_SOFTWARE && data[0] == EXC_SOFT_SIGNAL) {
+				pid_t pid;
+				pid_for_task(msg->task.name, &pid);
+
+				//printf("Retrieved UNIX signal %s. Clearing it on 0x%d...\n", signal_string(data[1]), msg->thread.name);
+
+				// Try to reset the signal
+				int err = ptrace(PT_THUPDATE, pid, (caddr_t)((uintptr_t) msg->thread.name), 0);
+				if (err != 0) {
+					// Warn the user, but try to continue, to at least send the reply back to the kernel
+        			perror("ptrace");
 				}
 			}
-			return thread;
+
+			// Send our reply back so the kernel knows this exception has been handled.
+			kret = mach_send_reply(msg->Head);
+			if (kret != MACH_MSG_SUCCESS) return 0;
+
+#if defined(__arm64__)
+			if(exception_type == EXC_BREAKPOINT /*&& data[0] == EXC_ARM_BREAKPOINT*/) {
+				// Yay, found a breakpoint
+				return msg->thread.name;
+			}
+#else
+			if(exception_type == EXC_BREAKPOINT && (data[0] == EXC_I386_SGL || data[0] == EXC_I386_BPT)) {
+				// Yay, found a breakpoint
+				return msg->thread.name;
+			}
+#endif
+			// Otherwise, resume the thread
+			if (thread_resume(msg->thread.name) != KERN_SUCCESS) return 0;
+
+			// And wait again
+			return mach_port_wait(port_set, task, nonblocking);
 		}
 
+		// TODO: check, if number is still the same for 64-bit
 		case 72: { // Death
 			// 72 is mach_notify_dead_name, defined in:
 			// https://opensource.apple.com/source/xnu/xnu-1228.7.58/osfmk/mach/notify.defs?txt
 			// compile this file with mig to get the C version of the description
-			ndr = (NDR_record_t *)(&msg.hdr + 1);
-			*task = *((mach_port_name_t *)(ndr + 1));
-			return msg.hdr.msgh_local_port;
+			
+			return msg->thread.name;
 		}
 	}
 	return 0;
 }
+
 
 kern_return_t
 mach_send_reply(mach_msg_header_t hdr) {

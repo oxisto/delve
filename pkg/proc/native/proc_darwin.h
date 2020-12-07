@@ -1,9 +1,16 @@
 //+build darwin,macnative
 
 #include <sys/types.h>
+#include <sys/ptrace.h>
 #include <libproc.h>
+#include <errno.h>
 #include <mach/mach.h>
 #include <mach/mach_vm.h>
+#if defined(__arm64__)
+#include <mach/arm/exception.h>
+#else
+#include <mach/i386/exception.h>
+#endif
 #include "mach_exc.h"
 #include "exc.h"
 

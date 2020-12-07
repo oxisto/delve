@@ -259,6 +259,7 @@ func (dbp *nativeProcess) trapWait(pid int) (*nativeThread, error) {
 
 		switch port {
 		case dbp.os.notificationPort:
+			fmt.Printf("notification\n")
 			// on macOS >= 10.12.1 the task_t changes after an execve, we could
 			// receive the notification for the death of the pre-execve task_t,
 			// this could also happen *before* we are notified that our task_t has
@@ -279,8 +280,10 @@ func (dbp *nativeProcess) trapWait(pid int) (*nativeThread, error) {
 			return nil, proc.ErrProcessExited{Pid: dbp.pid, Status: status.ExitStatus()}
 
 		case C.MACH_RCV_INTERRUPTED:
+			fmt.Printf("interrupted\n")
 			dbp.stopMu.Lock()
 			halt := dbp.os.halt
+			fmt.Printf("interrupted; halt: %d\n", halt)
 			dbp.stopMu.Unlock()
 			if !halt {
 				// Call trapWait again, it seems
@@ -384,6 +387,7 @@ func (dbp *nativeProcess) resume() error {
 			thread.CurrentBreakpoint.Clear()
 		}
 	}
+
 	// everything is resumed
 	for _, thread := range dbp.threads {
 		if err := thread.resume(); err != nil {

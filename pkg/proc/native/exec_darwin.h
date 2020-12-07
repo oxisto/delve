@@ -11,7 +11,4 @@
 #include <signal.h>
 
 int
-fork_exec(char *, char **, int, char *, task_t*, mach_port_t*, mach_port_t*, mach_port_t*);
-
-int
 spawn(char *, char **, int, char *, task_t*, mach_port_t*, mach_port_t*, mach_port_t*);

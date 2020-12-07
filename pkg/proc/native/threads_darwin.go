@@ -1,4 +1,4 @@
-//+build !arm64,macnative
+//+build darwin,macnative
 
 package native
 
@@ -17,14 +17,6 @@ import (
 
 // waitStatus is a synonym for the platform-specific WaitStatus
 type waitStatus sys.WaitStatus
-
-// osSpecificDetails holds information specific to the OSX/Darwin
-// operating system / kernel.
-type osSpecificDetails struct {
-	threadAct C.thread_act_t
-	registers C.x86_thread_state64_t
-	exists    bool
-}
 
 // ErrContinueThread is the error returned when a thread could not
 // be continued.
