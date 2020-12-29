@@ -189,7 +189,7 @@ This project adheres to Semantic Versioning.
 ### Changed
 
 - Changes to where the configuration is stored, conforming to [XDG Base Directory Specification](https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html) with fallbacks to the current directory when calls to `user.Current` fail (#1455 @GregorioMartinez, @acshekhara1)
-- Project moved from github.com/derekparker/delve to github.com/go-delve/delve (@derekparker)
+- Project moved from github.com/derekparker/delve to github.com/Lofanmi/delve (@derekparker)
 - Switched dependency management to go.mod (@aarzilli, @derekparker, @zavla)
 - New build scripts and support building on macOS without the native backend (@aarzilli, @kevin-cantwell)
 - Tolerate corrupted memory when reading the goroutine list (#1354, @aarzilli)

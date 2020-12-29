@@ -21,15 +21,15 @@ import (
 	"sync"
 	"time"
 
-	"github.com/go-delve/delve/pkg/dwarf/frame"
-	"github.com/go-delve/delve/pkg/dwarf/godwarf"
-	"github.com/go-delve/delve/pkg/dwarf/line"
-	"github.com/go-delve/delve/pkg/dwarf/loclist"
-	"github.com/go-delve/delve/pkg/dwarf/op"
-	"github.com/go-delve/delve/pkg/dwarf/reader"
-	"github.com/go-delve/delve/pkg/dwarf/util"
-	"github.com/go-delve/delve/pkg/goversion"
-	"github.com/go-delve/delve/pkg/logflags"
+	"github.com/Lofanmi/delve/pkg/dwarf/frame"
+	"github.com/Lofanmi/delve/pkg/dwarf/godwarf"
+	"github.com/Lofanmi/delve/pkg/dwarf/line"
+	"github.com/Lofanmi/delve/pkg/dwarf/loclist"
+	"github.com/Lofanmi/delve/pkg/dwarf/op"
+	"github.com/Lofanmi/delve/pkg/dwarf/reader"
+	"github.com/Lofanmi/delve/pkg/dwarf/util"
+	"github.com/Lofanmi/delve/pkg/goversion"
+	"github.com/Lofanmi/delve/pkg/logflags"
 	"github.com/hashicorp/golang-lru/simplelru"
 	"github.com/sirupsen/logrus"
 )
@@ -74,7 +74,7 @@ type BinaryInfo struct {
 
 	// PackageMap maps package names to package paths, needed to lookup types inside DWARF info.
 	// On Go1.12 this mapping is determined by using the last element of a package path, for example:
-	//   github.com/go-delve/delve
+	//   github.com/Lofanmi/delve
 	// will map to 'delve' because it ends in '/delve'.
 	// Starting with Go1.13 debug_info will contain a special attribute
 	// (godwarf.AttrGoPackageName) containing the canonical package name for

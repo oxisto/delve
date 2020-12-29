@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"text/tabwriter"
 
-	"github.com/go-delve/delve/service/api"
+	"github.com/Lofanmi/delve/service/api"
 )
 
 func disasmPrint(dv api.AsmInstructions, out io.Writer) {

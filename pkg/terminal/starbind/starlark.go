@@ -11,8 +11,8 @@ import (
 	"go.starlark.net/resolve"
 	"go.starlark.net/starlark"
 
-	"github.com/go-delve/delve/service"
-	"github.com/go-delve/delve/service/api"
+	"github.com/Lofanmi/delve/service"
+	"github.com/Lofanmi/delve/service/api"
 )
 
 //go:generate go run ../../../_scripts/gen-starlark-bindings.go go ./starlark_mapping.go

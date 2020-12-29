@@ -56,7 +56,7 @@ To see more values use the slice operator:
 
 For this purpose delve allows use of the slice operator on maps, `m[64:]` will return the key/value pairs of map `m` that follow the first 64 key/value pairs (note that delve iterates over maps using a fixed ordering).
 
-These limits can be configured with `max-string-len` and `max-array-values`. See [config](https://github.com/go-delve/delve/tree/master/Documentation/cli#config) for usage.
+These limits can be configured with `max-string-len` and `max-array-values`. See [config](https://github.com/Lofanmi/delve/tree/master/Documentation/cli#config) for usage.
 
 # Interfaces
 

@@ -9,7 +9,7 @@ import (
 
 	"go.starlark.net/starlark"
 
-	"github.com/go-delve/delve/service/api"
+	"github.com/Lofanmi/delve/service/api"
 )
 
 // autoLoadConfig is the load configuration used to automatically load more from a variable

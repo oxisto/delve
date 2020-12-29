@@ -6,7 +6,7 @@ import (
 	"errors"
 	"sync"
 
-	"github.com/go-delve/delve/pkg/proc"
+	"github.com/Lofanmi/delve/pkg/proc"
 )
 
 var ErrNativeBackendDisabled = errors.New("native backend disabled during compilation")

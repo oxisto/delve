@@ -21,11 +21,11 @@ import (
 	"strings"
 	"text/tabwriter"
 
+	"github.com/Lofanmi/delve/pkg/locspec"
+	"github.com/Lofanmi/delve/service"
+	"github.com/Lofanmi/delve/service/api"
+	"github.com/Lofanmi/delve/service/rpc2"
 	"github.com/cosiner/argv"
-	"github.com/go-delve/delve/pkg/locspec"
-	"github.com/go-delve/delve/service"
-	"github.com/go-delve/delve/service/api"
-	"github.com/go-delve/delve/service/rpc2"
 )
 
 const optimizedFunctionWarning = "Warning: debugging optimized function"
@@ -118,14 +118,14 @@ Type "help" followed by the name of a command for more information about it.`},
 
 	break [name] <linespec>
 
-See $GOPATH/src/github.com/go-delve/delve/Documentation/cli/locspec.md for the syntax of linespec.
+See $GOPATH/src/github.com/Lofanmi/delve/Documentation/cli/locspec.md for the syntax of linespec.
 
 See also: "help on", "help cond" and "help clear"`},
 		{aliases: []string{"trace", "t"}, group: breakCmds, cmdFn: tracepoint, helpMsg: `Set tracepoint.
 
 	trace [name] <linespec>
 
-A tracepoint is a breakpoint that does not stop the execution of the program, instead when the tracepoint is hit a notification is displayed. See $GOPATH/src/github.com/go-delve/delve/Documentation/cli/locspec.md for the syntax of linespec.
+A tracepoint is a breakpoint that does not stop the execution of the program, instead when the tracepoint is hit a notification is displayed. See $GOPATH/src/github.com/Lofanmi/delve/Documentation/cli/locspec.md for the syntax of linespec.
 
 See also: "help on", "help cond" and "help clear"`},
 		{aliases: []string{"restart", "r"}, group: runCmds, cmdFn: restart, helpMsg: `Restart process.
@@ -216,7 +216,7 @@ Called with more arguments it will execute a command on the specified goroutine.
 
 	[goroutine <n>] [frame <m>] print <expression>
 
-See $GOPATH/src/github.com/go-delve/delve/Documentation/cli/expr.md for a description of supported expressions.`},
+See $GOPATH/src/github.com/Lofanmi/delve/Documentation/cli/expr.md for a description of supported expressions.`},
 		{aliases: []string{"whatis"}, group: dataCmds, cmdFn: whatisCommand, helpMsg: `Prints type of an expression.
 
 	whatis <expression>`},
@@ -224,7 +224,7 @@ See $GOPATH/src/github.com/go-delve/delve/Documentation/cli/expr.md for a descri
 
 	[goroutine <n>] [frame <m>] set <variable> = <value>
 
-See $GOPATH/src/github.com/go-delve/delve/Documentation/cli/expr.md for a description of supported expressions. Only numerical variables and pointers can be changed.`},
+See $GOPATH/src/github.com/Lofanmi/delve/Documentation/cli/expr.md for a description of supported expressions. Only numerical variables and pointers can be changed.`},
 		{aliases: []string{"sources"}, cmdFn: sources, helpMsg: `Print list of source files.
 
 	sources [<regex>]
@@ -336,7 +336,7 @@ Executes the specified command (print, args, locals) in the context of the n-th 
 
 	source <path>
 	
-If path ends with the .star extension it will be interpreted as a starlark script. See $GOPATH/src/github.com/go-delve/delve/Documentation/cli/starlark.md for the syntax.
+If path ends with the .star extension it will be interpreted as a starlark script. See $GOPATH/src/github.com/Lofanmi/delve/Documentation/cli/starlark.md for the syntax.
 
 If path is a single '-' character an interactive starlark interpreter will start instead. Type 'exit' to exit.`},
 		{aliases: []string{"disassemble", "disass"}, cmdFn: disassCommand, helpMsg: `Disassembler.

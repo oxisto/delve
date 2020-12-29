@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/go-delve/delve/_fixtures/internal/dir0/pkg"
 	"runtime"
+
+	"github.com/Lofanmi/delve/_fixtures/internal/dir0/pkg"
 )
 
 type ConstType uint8

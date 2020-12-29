@@ -14,7 +14,7 @@ import (
 
 	sys "golang.org/x/sys/unix"
 
-	"github.com/go-delve/delve/pkg/proc/fbsdutil"
+	"github.com/Lofanmi/delve/pkg/proc/fbsdutil"
 )
 
 // ptraceAttach executes the sys.PtraceAttach call.

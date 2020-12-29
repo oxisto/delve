@@ -9,10 +9,10 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/go-delve/delve/pkg/logflags"
-	"github.com/go-delve/delve/pkg/proc"
-	"github.com/go-delve/delve/pkg/proc/gdbserial"
-	protest "github.com/go-delve/delve/pkg/proc/test"
+	"github.com/Lofanmi/delve/pkg/logflags"
+	"github.com/Lofanmi/delve/pkg/proc"
+	"github.com/Lofanmi/delve/pkg/proc/gdbserial"
+	protest "github.com/Lofanmi/delve/pkg/proc/test"
 )
 
 func TestMain(m *testing.M) {

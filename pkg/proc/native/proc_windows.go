@@ -9,7 +9,7 @@ import (
 
 	sys "golang.org/x/sys/windows"
 
-	"github.com/go-delve/delve/pkg/proc"
+	"github.com/Lofanmi/delve/pkg/proc"
 )
 
 // osProcessDetails holds Windows specific information.

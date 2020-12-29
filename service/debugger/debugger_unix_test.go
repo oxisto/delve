@@ -11,10 +11,10 @@ import (
 	"runtime"
 	"testing"
 
+	"github.com/Lofanmi/delve/pkg/gobuild"
+	protest "github.com/Lofanmi/delve/pkg/proc/test"
+	"github.com/Lofanmi/delve/service/api"
 	"github.com/creack/pty"
-	"github.com/go-delve/delve/pkg/gobuild"
-	protest "github.com/go-delve/delve/pkg/proc/test"
-	"github.com/go-delve/delve/service/api"
 )
 
 func TestDebugger_LaunchNoExecutablePerm(t *testing.T) {

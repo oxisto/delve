@@ -12,7 +12,7 @@ import (
 
 	sys "golang.org/x/sys/unix"
 
-	"github.com/go-delve/delve/pkg/proc"
+	"github.com/Lofanmi/delve/pkg/proc"
 )
 
 // waitStatus is a synonym for the platform-specific WaitStatus

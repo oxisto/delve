@@ -5,7 +5,7 @@ import (
 	"encoding/binary"
 	"fmt"
 
-	"github.com/go-delve/delve/pkg/dwarf/util"
+	"github.com/Lofanmi/delve/pkg/dwarf/util"
 )
 
 type DWRule struct {

@@ -13,7 +13,7 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/go-delve/delve/pkg/dwarf/util"
+	"github.com/Lofanmi/delve/pkg/dwarf/util"
 )
 
 func slurpGzip(path string) ([]byte, error) {

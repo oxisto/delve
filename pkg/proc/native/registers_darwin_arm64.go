@@ -8,7 +8,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/go-delve/delve/pkg/proc"
+	"github.com/Lofanmi/delve/pkg/proc"
 	"golang.org/x/arch/arm64/arm64asm"
 )
 

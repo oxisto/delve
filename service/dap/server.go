@@ -21,12 +21,12 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/go-delve/delve/pkg/gobuild"
-	"github.com/go-delve/delve/pkg/logflags"
-	"github.com/go-delve/delve/pkg/proc"
-	"github.com/go-delve/delve/service"
-	"github.com/go-delve/delve/service/api"
-	"github.com/go-delve/delve/service/debugger"
+	"github.com/Lofanmi/delve/pkg/gobuild"
+	"github.com/Lofanmi/delve/pkg/logflags"
+	"github.com/Lofanmi/delve/pkg/proc"
+	"github.com/Lofanmi/delve/service"
+	"github.com/Lofanmi/delve/service/api"
+	"github.com/Lofanmi/delve/service/debugger"
 	"github.com/google/go-dap"
 	"github.com/sirupsen/logrus"
 )
@@ -864,7 +864,7 @@ func (s *Server) onVariablesRequest(request *dap.VariablesRequest) {
 	}
 	children := make([]dap.Variable, 0)
 	// TODO(polina): check and handle if variable loaded incompletely
-	// https://github.com/go-delve/delve/blob/master/Documentation/api/ClientHowto.md#looking-into-variables
+	// https://github.com/Lofanmi/delve/blob/master/Documentation/api/ClientHowto.md#looking-into-variables
 
 	switch v.Kind {
 	case reflect.Map:
@@ -1330,7 +1330,7 @@ func newEvent(event string) *dap.Event {
 }
 
 const BetterBadAccessError = `invalid memory address or nil pointer dereference [signal SIGSEGV: segmentation violation]
-Unable to propogate EXC_BAD_ACCESS signal to target process and panic (see https://github.com/go-delve/delve/issues/852)`
+Unable to propogate EXC_BAD_ACCESS signal to target process and panic (see https://github.com/Lofanmi/delve/issues/852)`
 
 func (s *Server) resetHandlesForStop() {
 	s.stackFrameHandles.reset()

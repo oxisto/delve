@@ -12,11 +12,11 @@ import (
 
 	"github.com/peterh/liner"
 
-	"github.com/go-delve/delve/pkg/config"
-	"github.com/go-delve/delve/pkg/locspec"
-	"github.com/go-delve/delve/pkg/terminal/starbind"
-	"github.com/go-delve/delve/service"
-	"github.com/go-delve/delve/service/api"
+	"github.com/Lofanmi/delve/pkg/config"
+	"github.com/Lofanmi/delve/pkg/locspec"
+	"github.com/Lofanmi/delve/pkg/terminal/starbind"
+	"github.com/Lofanmi/delve/service"
+	"github.com/Lofanmi/delve/service/api"
 )
 
 const (

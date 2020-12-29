@@ -154,7 +154,7 @@ func genMapping(bindings []binding) []byte {
 
 	fmt.Fprintf(buf, "// DO NOT EDIT: auto-generated using _scripts/gen-starlark-bindings.go\n\n")
 	fmt.Fprintf(buf, "package starbind\n\n")
-	fmt.Fprintf(buf, "import ( \"go.starlark.net/starlark\" \n \"github.com/go-delve/delve/service/api\" \n \"github.com/go-delve/delve/service/rpc2\" \n \"fmt\" )\n\n")
+	fmt.Fprintf(buf, "import ( \"go.starlark.net/starlark\" \n \"github.com/Lofanmi/delve/service/api\" \n \"github.com/Lofanmi/delve/service/rpc2\" \n \"fmt\" )\n\n")
 	fmt.Fprintf(buf, "func (env *Env) starlarkPredeclare() starlark.StringDict {\n")
 	fmt.Fprintf(buf, "r := starlark.StringDict{}\n\n")
 
@@ -169,15 +169,15 @@ func genMapping(bindings []binding) []byte {
 			fmt.Fprintf(buf, "if len(args) > %d && args[%d] != starlark.None { err := unmarshalStarlarkValue(args[%d], &rpcArgs.%s, %q); if err != nil { return starlark.None, decorateError(thread, err) } }", i, i, i, binding.argNames[i], binding.argNames[i])
 
 			switch binding.argTypes[i] {
-			case "*github.com/go-delve/delve/service/api.LoadConfig":
+			case "*github.com/Lofanmi/delve/service/api.LoadConfig":
 				if binding.fn.Name() != "Stacktrace" {
 					fmt.Fprintf(buf, "else { cfg := env.ctx.LoadConfig(); rpcArgs.%s = &cfg }", binding.argNames[i])
 				}
-			case "github.com/go-delve/delve/service/api.LoadConfig":
+			case "github.com/Lofanmi/delve/service/api.LoadConfig":
 				fmt.Fprintf(buf, "else { rpcArgs.%s = env.ctx.LoadConfig() }", binding.argNames[i])
-			case "*github.com/go-delve/delve/service/api.EvalScope":
+			case "*github.com/Lofanmi/delve/service/api.EvalScope":
 				fmt.Fprintf(buf, "else { scope := env.ctx.Scope(); rpcArgs.%s = &scope }", binding.argNames[i])
-			case "github.com/go-delve/delve/service/api.EvalScope":
+			case "github.com/Lofanmi/delve/service/api.EvalScope":
 				fmt.Fprintf(buf, "else { rpcArgs.%s = env.ctx.Scope() }", binding.argNames[i])
 			}
 
@@ -221,7 +221,7 @@ func genDocs(bindings []binding) []byte {
 
 	for _, binding := range bindings {
 		argNames := strings.Join(binding.argNames, ", ")
-		fmt.Fprintf(&buf, "%s(%s) | Equivalent to API call [%s](https://godoc.org/github.com/go-delve/delve/service/rpc2#RPCServer.%s)\n", binding.name, argNames, binding.fn.Name(), binding.fn.Name())
+		fmt.Fprintf(&buf, "%s(%s) | Equivalent to API call [%s](https://godoc.org/github.com/Lofanmi/delve/service/rpc2#RPCServer.%s)\n", binding.name, argNames, binding.fn.Name(), binding.fn.Name())
 	}
 
 	fmt.Fprintf(&buf, "dlv_command(command) | Executes the specified command as if typed at the dlv_prompt\n")
@@ -291,14 +291,14 @@ func main() {
 		Mode: packages.LoadSyntax,
 		Fset: fset,
 	}
-	pkgs, err := packages.Load(cfg, "github.com/go-delve/delve/service/rpc2")
+	pkgs, err := packages.Load(cfg, "github.com/Lofanmi/delve/service/rpc2")
 	if err != nil {
 		log.Fatalf("could not load packages: %v", err)
 	}
 
 	var serverMethods []*types.Func
 	packages.Visit(pkgs, func(pkg *packages.Package) bool {
-		if pkg.PkgPath == "github.com/go-delve/delve/service/rpc2" {
+		if pkg.PkgPath == "github.com/Lofanmi/delve/service/rpc2" {
 			serverMethods = getSuitableMethods(pkg.Types, "RPCServer")
 		}
 		return true

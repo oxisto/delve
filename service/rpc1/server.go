@@ -4,10 +4,10 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/go-delve/delve/pkg/proc"
-	"github.com/go-delve/delve/service"
-	"github.com/go-delve/delve/service/api"
-	"github.com/go-delve/delve/service/debugger"
+	"github.com/Lofanmi/delve/pkg/proc"
+	"github.com/Lofanmi/delve/service"
+	"github.com/Lofanmi/delve/service/api"
+	"github.com/Lofanmi/delve/service/debugger"
 )
 
 var defaultLoadConfig = proc.LoadConfig{

@@ -8,7 +8,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/go-delve/delve/cmd/dlv/cmds"
+	"github.com/Lofanmi/delve/cmd/dlv/cmds"
 	"github.com/spf13/cobra/doc"
 )
 

@@ -3,9 +3,10 @@ package proc
 import (
 	"encoding/binary"
 	"fmt"
-	"github.com/go-delve/delve/pkg/dwarf/frame"
-	"github.com/go-delve/delve/pkg/dwarf/op"
 	"strings"
+
+	"github.com/Lofanmi/delve/pkg/dwarf/frame"
+	"github.com/Lofanmi/delve/pkg/dwarf/op"
 )
 
 const (

@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/go-delve/delve/_fixtures/internal/pluginsupport"
 	"os"
 	"plugin"
+
+	"github.com/Lofanmi/delve/_fixtures/internal/pluginsupport"
 )
 
 type asomething struct {

@@ -18,8 +18,8 @@ import (
 
 	sys "golang.org/x/sys/unix"
 
-	"github.com/go-delve/delve/pkg/proc"
-	"github.com/go-delve/delve/pkg/proc/linutil"
+	"github.com/Lofanmi/delve/pkg/proc"
+	"github.com/Lofanmi/delve/pkg/proc/linutil"
 
 	isatty "github.com/mattn/go-isatty"
 )

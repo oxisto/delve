@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"go/constant"
 
-	"github.com/go-delve/delve/pkg/dwarf/frame"
-	"github.com/go-delve/delve/pkg/dwarf/op"
-	"github.com/go-delve/delve/pkg/dwarf/reader"
+	"github.com/Lofanmi/delve/pkg/dwarf/frame"
+	"github.com/Lofanmi/delve/pkg/dwarf/op"
+	"github.com/Lofanmi/delve/pkg/dwarf/reader"
 )
 
 // This code is partly adapted from runtime.gentraceback in

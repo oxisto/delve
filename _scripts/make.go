@@ -11,11 +11,11 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/go-delve/delve/pkg/goversion"
+	"github.com/Lofanmi/delve/pkg/goversion"
 	"github.com/spf13/cobra"
 )
 
-const DelveMainPackagePath = "github.com/go-delve/delve/cmd/dlv"
+const DelveMainPackagePath = "github.com/Lofanmi/delve/cmd/dlv"
 
 var Verbose bool
 var NOTimeout bool
@@ -79,7 +79,7 @@ Use the flags -s, -r and -b to specify which tests to run. Specifying nothing wi
 	test.PersistentFlags().StringVarP(&TestSet, "test-set", "s", "", `Select the set of tests to run, one of either:
 	all		tests all packages
 	basic		tests proc, integration and terminal
-	integration 	tests github.com/go-delve/delve/service/test
+	integration 	tests github.com/Lofanmi/delve/service/test
 	package-name	test the specified package only
 `)
 	test.PersistentFlags().StringVarP(&TestRegex, "test-run", "r", "", `Only runs the tests matching the specified regex. This option can only be specified if testset is a single package`)
@@ -388,10 +388,10 @@ func testSetToPackages(testSet string) []string {
 		return allPackages()
 
 	case "basic":
-		return []string{"github.com/go-delve/delve/pkg/proc", "github.com/go-delve/delve/service/test", "github.com/go-delve/delve/pkg/terminal"}
+		return []string{"github.com/Lofanmi/delve/pkg/proc", "github.com/Lofanmi/delve/service/test", "github.com/Lofanmi/delve/pkg/terminal"}
 
 	case "integration":
-		return []string{"github.com/go-delve/delve/service/test"}
+		return []string{"github.com/Lofanmi/delve/service/test"}
 
 	default:
 		for _, pkg := range allPackages() {

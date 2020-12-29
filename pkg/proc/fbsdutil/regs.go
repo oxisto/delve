@@ -3,8 +3,8 @@ package fbsdutil
 import (
 	"golang.org/x/arch/x86/x86asm"
 
-	"github.com/go-delve/delve/pkg/proc"
-	"github.com/go-delve/delve/pkg/proc/linutil"
+	"github.com/Lofanmi/delve/pkg/proc"
+	"github.com/Lofanmi/delve/pkg/proc/linutil"
 )
 
 // AMD64Registers implements the proc.Registers interface for the native/freebsd

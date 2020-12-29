@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/go-delve/delve/pkg/dwarf/util"
+	"github.com/Lofanmi/delve/pkg/dwarf/util"
 )
 
 type DebugLinePrologue struct {

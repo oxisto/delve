@@ -3,8 +3,8 @@ package main
 import (
 	"os"
 
-	"github.com/go-delve/delve/cmd/dlv/cmds"
-	"github.com/go-delve/delve/pkg/version"
+	"github.com/Lofanmi/delve/cmd/dlv/cmds"
+	"github.com/Lofanmi/delve/pkg/version"
 	"github.com/sirupsen/logrus"
 )
 

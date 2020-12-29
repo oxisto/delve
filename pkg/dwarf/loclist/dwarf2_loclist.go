@@ -3,7 +3,7 @@ package loclist
 import (
 	"encoding/binary"
 
-	"github.com/go-delve/delve/pkg/dwarf/godwarf"
+	"github.com/Lofanmi/delve/pkg/dwarf/godwarf"
 )
 
 // Reader represents a loclist reader.

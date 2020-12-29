@@ -17,15 +17,15 @@ import (
 	"testing"
 	"time"
 
-	protest "github.com/go-delve/delve/pkg/proc/test"
-	"github.com/go-delve/delve/service/debugger"
+	protest "github.com/Lofanmi/delve/pkg/proc/test"
+	"github.com/Lofanmi/delve/service/debugger"
 
-	"github.com/go-delve/delve/pkg/goversion"
-	"github.com/go-delve/delve/pkg/logflags"
-	"github.com/go-delve/delve/service"
-	"github.com/go-delve/delve/service/api"
-	"github.com/go-delve/delve/service/rpc2"
-	"github.com/go-delve/delve/service/rpccommon"
+	"github.com/Lofanmi/delve/pkg/goversion"
+	"github.com/Lofanmi/delve/pkg/logflags"
+	"github.com/Lofanmi/delve/service"
+	"github.com/Lofanmi/delve/service/api"
+	"github.com/Lofanmi/delve/service/rpc2"
+	"github.com/Lofanmi/delve/service/rpccommon"
 )
 
 var normalLoadConfig = api.LoadConfig{
@@ -834,7 +834,7 @@ func TestClientServer_FindLocations(t *testing.T) {
 
 	if goversion.VersionAfterOrEqual(runtime.Version(), 1, 13) {
 		withTestClient2("pkgrenames", t, func(c service.Client) {
-			someFuncLoc := findLocationHelper(t, c, "github.com/go-delve/delve/_fixtures/internal/dir%2eio.SomeFunction:0", false, 1, 0)[0]
+			someFuncLoc := findLocationHelper(t, c, "github.com/Lofanmi/delve/_fixtures/internal/dir%2eio.SomeFunction:0", false, 1, 0)[0]
 			findLocationHelper(t, c, "dirio.SomeFunction:0", false, 1, someFuncLoc)
 		})
 	}

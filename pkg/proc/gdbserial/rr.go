@@ -14,7 +14,7 @@ import (
 	"syscall"
 	"unicode"
 
-	"github.com/go-delve/delve/pkg/proc"
+	"github.com/Lofanmi/delve/pkg/proc"
 )
 
 // RecordAsync configures rr to record the execution of the specified

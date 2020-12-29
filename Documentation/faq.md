@@ -12,9 +12,9 @@ Currently Delve supports (GOOS / GOARCH):
 
 There is no planned ETA for support of other architectures or operating systems. Bugs tracking requested support are:
 
-- [32bit ARM support](https://github.com/go-delve/delve/issues/328)
-- [PowerPC support](https://github.com/go-delve/delve/issues/1564)
-- [OpenBSD](https://github.com/go-delve/delve/issues/1477)
+- [32bit ARM support](https://github.com/Lofanmi/delve/issues/328)
+- [PowerPC support](https://github.com/Lofanmi/delve/issues/1564)
+- [OpenBSD](https://github.com/Lofanmi/delve/issues/1477)
 
 See also: [backend test health](backend_test_health.md).
 

@@ -5,7 +5,7 @@ import (
 	"runtime"
 	"sync"
 
-	"github.com/go-delve/delve/pkg/proc"
+	"github.com/Lofanmi/delve/pkg/proc"
 )
 
 // Process represents all of the information the debugger
@@ -25,13 +25,13 @@ type nativeProcess struct {
 	// Thread used to read and write memory
 	memthread *nativeThread
 
-	os                  *osProcessDetails
-	firstStart          bool
-	resumeChan          chan<- struct{}
-	ptraceChan          chan func()
-	ptraceDoneChan      chan interface{}
-	childProcess        bool // this process was launched, not attached to
-	stopMu              sync.Mutex // protects manualStopRequested
+	os             *osProcessDetails
+	firstStart     bool
+	resumeChan     chan<- struct{}
+	ptraceChan     chan func()
+	ptraceDoneChan chan interface{}
+	childProcess   bool       // this process was launched, not attached to
+	stopMu         sync.Mutex // protects manualStopRequested
 	// manualStopRequested is set if all the threads in the process were
 	// signalled to stop as a result of a Halt API call. Used to disambiguate
 	// why a thread is found to have stopped.

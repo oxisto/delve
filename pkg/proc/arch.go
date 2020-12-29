@@ -1,8 +1,8 @@
 package proc
 
 import (
-	"github.com/go-delve/delve/pkg/dwarf/frame"
-	"github.com/go-delve/delve/pkg/dwarf/op"
+	"github.com/Lofanmi/delve/pkg/dwarf/frame"
+	"github.com/Lofanmi/delve/pkg/dwarf/op"
 )
 
 // Arch represents a CPU architecture.

@@ -6,11 +6,11 @@ import (
 	"sort"
 	"time"
 
-	"github.com/go-delve/delve/pkg/dwarf/op"
-	"github.com/go-delve/delve/pkg/proc"
-	"github.com/go-delve/delve/service"
-	"github.com/go-delve/delve/service/api"
-	"github.com/go-delve/delve/service/debugger"
+	"github.com/Lofanmi/delve/pkg/dwarf/op"
+	"github.com/Lofanmi/delve/pkg/proc"
+	"github.com/Lofanmi/delve/service"
+	"github.com/Lofanmi/delve/service/api"
+	"github.com/Lofanmi/delve/service/debugger"
 )
 
 type RPCServer struct {
@@ -469,7 +469,7 @@ type EvalOut struct {
 
 // EvalVariable returns a variable in the specified context.
 //
-// See https://github.com/go-delve/delve/wiki/Expressions for
+// See https://github.com/Lofanmi/delve/wiki/Expressions for
 // a description of acceptable values of arg.Expr.
 func (s *RPCServer) Eval(arg EvalIn, out *EvalOut) error {
 	cfg := arg.Cfg
