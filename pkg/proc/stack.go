@@ -227,12 +227,14 @@ func newStackIterator(bi *BinaryInfo, mem MemoryReadWriter, regs op.DwarfRegiste
 	if g != nil {
 		systemstack = g.SystemStack
 	}
+
 	return &stackIterator{pc: regs.PC(), regs: regs, top: true, bi: bi, mem: mem, err: nil, atend: false, stackhi: stackhi, stackBarrierPC: stackBarrierPC, stkbar: stkbar, systemstack: systemstack, g: g, opts: opts}
 }
 
 // Next points the iterator to the next stack frame.
 func (it *stackIterator) Next() bool {
 	if it.err != nil || it.atend {
+		fmt.Printf("end!? it.atend: %v\n", it.atend)
 		return false
 	}
 
@@ -247,11 +249,13 @@ func (it *stackIterator) Next() bool {
 
 	if it.opts&StacktraceSimple == 0 {
 		if it.bi.Arch.switchStack(it, &callFrameRegs) {
+			fmt.Printf("Did something in switch stack\n")
 			return true
 		}
 	}
 
 	if it.frame.Ret <= 0 {
+		fmt.Printf("whoot?: %+v\n", it.frame)
 		it.atend = true
 		return true
 	}
@@ -269,7 +273,7 @@ func (it *stackIterator) switchToGoroutineStack() {
 	it.regs.Reg(it.regs.SPRegNum).Uint64Val = it.g.SP
 	it.regs.AddReg(it.regs.BPRegNum, op.DwarfRegisterFromUint64(it.g.BP))
 	if it.bi.Arch.Name == "arm64" {
-		it.regs.Reg(it.regs.LRRegNum).Uint64Val = it.g.LR
+		it.regs.AddReg(it.regs.LRRegNum, op.DwarfRegisterFromUint64(it.g.LR))
 	}
 }
 
@@ -338,6 +342,7 @@ func (it *stackIterator) stacktrace(depth int) ([]Stackframe, error) {
 	frames := make([]Stackframe, 0, depth+1)
 	for it.Next() {
 		frames = it.appendInlineCalls(frames, it.Frame())
+		//fmt.Printf("Appending frame: %+v\n", it.Frame().Current.Fn.Name)
 		if len(frames) >= depth+1 {
 			break
 		}
@@ -453,7 +458,8 @@ func (it *stackIterator) advanceRegs() (callFrameRegs op.DwarfRegisters, ret uin
 				if err == nil {
 					err = fmt.Errorf("Undefined return address at %#x", it.pc)
 				}
-				it.err = err
+				// ignore error for now, its a real problem!
+				//it.err = err
 			} else {
 				ret = reg.Uint64Val
 			}
