@@ -927,7 +927,9 @@ func (conn *gdbConn) writeMemory(addr uint64, data []byte) (written int, err err
 
 func (conn *gdbConn) allocMemory(sz uint64) (uint64, error) {
 	conn.outbuf.Reset()
-	fmt.Fprintf(&conn.outbuf, "$_M%x,rwx", sz)
+	// somehow rwx fails on darwin/arm64 but x works. we need to test, whether
+	// this also works on other platforms now
+	fmt.Fprintf(&conn.outbuf, "$_M%x,rx", sz)
 	resp, err := conn.exec(conn.outbuf.Bytes(), "memory allocation")
 	if err != nil {
 		return 0, err

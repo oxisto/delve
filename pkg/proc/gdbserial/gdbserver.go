@@ -310,6 +310,7 @@ func (p *gdbProcess) Connect(conn net.Conn, path string, pid int, debugInfoDirs 
 		return nil, err
 	}
 
+	fmt.Printf("hallo!!\n")
 	if p.bi.Arch.Name != "arm64" {
 		// None of the stubs we support returns the value of fs_base or gs_base
 		// along with the registers, therefore we have to resort to executing a MOV
@@ -323,6 +324,16 @@ func (p *gdbProcess) Connect(conn net.Conn, path string, pid int, debugInfoDirs 
 			if _, err := p.conn.writeMemory(addr, p.loadGInstr()); err == nil {
 				p.loadGInstrAddr = addr
 			}
+		}
+	} else {
+		fmt.Printf("hello arm64\n")
+		if addr, err := p.conn.allocMemory(256); err == nil {
+			if _, err := p.conn.writeMemory(addr, p.loadGInstr()); err == nil {
+				p.loadGInstrAddr = addr
+				fmt.Printf("Wrote instruction at 0x%x\n", addr)
+			}
+		} else {
+			fmt.Printf("Some error: %s\n", err)
 		}
 	}
 
@@ -1448,8 +1459,14 @@ func (p *gdbProcess) loadGInstr() []byte {
 	var op []byte
 	switch p.bi.GOOS {
 	case "windows", "darwin", "freebsd":
-		// mov rcx, QWORD PTR gs:{uint32(off)}
-		op = []byte{0x65, 0x48, 0x8b, 0x0c, 0x25}
+		if p.bi.Arch.Name == "amd64" {
+			// mov rcx, QWORD PTR gs:{uint32(off)}
+			op = []byte{0x65, 0x48, 0x8b, 0x0c, 0x25}
+		} else if p.bi.Arch.Name == "arm64" {
+			// mrs x0, TPIDRRO_EL0
+			//op = []byte{0x60, 0xd0, 0x3b, 0xd5}
+			op = []byte{0x60, 0xd0, 0x3b, 0xd5}
+		}
 	case "linux":
 		// mov rcx,QWORD PTR fs:{uint32(off)}
 		op = []byte{0x64, 0x48, 0x8B, 0x0C, 0x25}
@@ -1522,6 +1539,12 @@ func (t *gdbThread) reloadRegisters() error {
 		t.regs.gaddr = t.regs.byName("x28")
 		t.regs.hasgaddr = true
 		t.regs.tls = 0
+
+		// only necessary in cgo stack, but probably doesn't hurt, does it?
+		if t.p.loadGInstrAddr > 0 {
+			return t.reloadGAlloc()
+		}
+		return t.reloadGAtPC()
 	} else {
 		if t.p.loadGInstrAddr > 0 {
 			return t.reloadGAlloc()
@@ -1694,8 +1717,14 @@ func (t *gdbThread) reloadGAlloc() error {
 		return err
 	}
 
-	t.regs.gaddr = t.regs.CX()
-	t.regs.hasgaddr = true
+	fmt.Printf("Gaddr from register: 0x%x\n", t.regs.gaddr)
+
+	el0 := t.regs.CX() /*& 0xfffffffffffffff8*/
+	//t.regs.gaddr = el0
+	//t.regs.hasgaddr = true
+
+	fmt.Printf("Content of TPIDR_EL0: 0x%x\n", el0)
+	fmt.Printf("Content of TPIDR_EL0& 0xfffffffffffffff8: 0x%x\n", el0&0xfffffffffffffff8)
 
 	return err
 }

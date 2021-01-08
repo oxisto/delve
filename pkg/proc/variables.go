@@ -253,8 +253,10 @@ func GetG(thread Thread) (*G, error) {
 
 	g, err := gaddr.parseG()
 	if err != nil {
+		fmt.Printf("error: %+v\n", err)
 		return nil, err
 	}
+	fmt.Printf("Successfully parsed goroutine at 0x%x: %v\n", gaddr.Addr, g.CurrentLoc)
 	if g.ID == 0 {
 		// The runtime uses a special goroutine with ID == 0 to mark that the
 		// current goroutine is executing on the system stack (sometimes also
